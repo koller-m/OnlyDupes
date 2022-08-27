@@ -22,6 +22,13 @@ func dupeView(w http.ResponseWriter, r *http.Request) {
 }
 
 func dupeCreate(w http.ResponseWriter, r *http.Request) {
+	// Only allow dupeCreate to act on POST requests
+	if r.Method != "POST" {
+		w.WriteHeader(405)
+		w.Write([]byte("Method Not Allowed"))
+		return
+	}
+
 	w.Write([]byte("Add a new dupe..."))
 }
 
