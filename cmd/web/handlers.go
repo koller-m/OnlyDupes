@@ -2,15 +2,11 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 )
 
-// Create home handler
 func home(w http.ResponseWriter, r *http.Request) {
-	// Check if the request matches "/" exactly
-	// If not, send a 404 response
 	if r.URL.Path != "/" {
 		http.NotFound(w, r)
 		return
@@ -20,8 +16,6 @@ func home(w http.ResponseWriter, r *http.Request) {
 }
 
 func dupeView(w http.ResponseWriter, r *http.Request) {
-	// Get the value of the id param
-	// Convert to int
 	id, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil || id < 1 {
 		http.NotFound(w, r)
@@ -32,25 +26,11 @@ func dupeView(w http.ResponseWriter, r *http.Request) {
 }
 
 func dupeCreate(w http.ResponseWriter, r *http.Request) {
-	// Only allow dupeCreate to act on POST requests
-	if r.Method != "POST" {
+	if r.Method != http.MethodPost {
 		w.Header().Set("Allow", http.MethodPost)
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
 	w.Write([]byte("Add a new dupe..."))
-}
-
-func main() {
-	// Init router, then register handler functions
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", home)
-	mux.HandleFunc("/dupe/view", dupeView)
-	mux.HandleFunc("/dupe/create", dupeCreate)
-
-	// Init web server
-	log.Print("Starting server on :4000")
-	err := http.ListenAndServe(":4000", mux)
-	log.Fatal(err)
 }
