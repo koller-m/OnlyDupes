@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 // Create home handler
@@ -18,7 +20,15 @@ func home(w http.ResponseWriter, r *http.Request) {
 }
 
 func dupeView(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Display a specific dupe..."))
+	// Get the value of the id param
+	// Convert to int
+	id, err := strconv.Atoi(r.URL.Query().Get("id"))
+	if err != nil || id < 1 {
+		http.NotFound(w, r)
+		return
+	}
+
+	fmt.Fprintf(w, "Display a specific dupe with ID %d...", id)
 }
 
 func dupeCreate(w http.ResponseWriter, r *http.Request) {
