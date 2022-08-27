@@ -7,6 +7,13 @@ import (
 
 // Create home handler
 func home(w http.ResponseWriter, r *http.Request) {
+	// Check if the request matches "/" exactly
+	// If not, send a 404 response
+	if r.URL.Path != "/" {
+		http.NotFound(w, r)
+		return
+	}
+
 	w.Write([]byte("Hello from OnlyDupes"))
 }
 
