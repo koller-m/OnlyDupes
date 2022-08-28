@@ -14,17 +14,24 @@ func home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Read home template into template set
+	files := []string{
+		"./ui/html/base.tmpl.html",
+		"./ui/html/partials/nav.tmpl.html",
+		"./ui/html/pages/home.tmpl.html",
+	}
+
+	// Read files into template set
 	// If error, send 500 Internal Server Error
-	ts, err := template.ParseFiles("./ui/html/pages/home.tmpl.html")
+	ts, err := template.ParseFiles(files...)
 	if err != nil {
 		log.Print(err.Error())
 		http.Error(w, "Internal Server Error", 500)
 		return
 	}
 
-	// Write the template set to the response body
-	err = ts.Execute(w, nil)
+	// Write the base template to the response body
+	// Invoking base will in turn invoke title and main
+	err = ts.ExecuteTemplate(w, "base", nil)
 	if err != nil {
 		log.Print(err.Error())
 		http.Error(w, "Internal Server Error", 500)
