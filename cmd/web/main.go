@@ -11,7 +11,7 @@ func main() {
 	mux.HandleFunc("/dupe/view", dupeView)
 	mux.HandleFunc("/dupe/create", dupeCreate)
 
-	// Test WSL config
+	// Test WSL config on VSCode
 	// Init web server
 	log.Print("Starting server on :4000")
 	err := http.ListenAndServe(":4000", mux)
