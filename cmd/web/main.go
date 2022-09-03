@@ -7,12 +7,15 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/koller-m/OnlyDupes/internal/models"
+
 	_ "github.com/go-sql-driver/mysql"
 )
 
 type application struct {
 	errorLog *log.Logger
 	infoLog  *log.Logger
+	dupes    *models.DupeModel
 }
 
 func main() {
@@ -34,6 +37,7 @@ func main() {
 	app := &application{
 		errorLog: errorLog,
 		infoLog:  infoLog,
+		dupes:    &models.DupeModel{DB: db},
 	}
 
 	srv := &http.Server{

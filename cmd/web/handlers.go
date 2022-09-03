@@ -52,5 +52,15 @@ func (app *application) dupeCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Write([]byte("Add a new dupe..."))
+	dupe := "Another placeholder dupe to test db"
+	content := "Trying to execute SQL statements from OnlyDupes"
+	expires := 3
+
+	id, err := app.dupes.Insert(dupe, content, expires)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	http.Redirect(w, r, fmt.Sprintf("/dupe/view?id=%d", id), http.StatusSeeOther)
 }
