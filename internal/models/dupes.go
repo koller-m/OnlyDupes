@@ -2,6 +2,7 @@ package models
 
 import (
 	"database/sql"
+	"errors"
 	"time"
 )
 
@@ -35,7 +36,23 @@ func (m *DupeModel) Insert(dupe string, content string, expires int) (int, error
 }
 
 func (m *DupeModel) Get(id int) (*Dupe, error) {
-	return nil, nil
+	stmt := `SELECT id, dupe, content, created, expires FROM dupes
+    WHERE expires > UTC_TIMESTAMP() AND id = ?`
+
+	row := m.DB.QueryRow(stmt, id)
+
+	s := &Dupe{}
+
+	err := row.Scan(&s.ID, &s.Dupe, &s.Content, &s.Created, &s.Expires)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, ErrNoRecord
+		} else {
+			return nil, err
+		}
+	}
+
+	return s, nil
 }
 
 func (m *DupeModel) Latest() ([]*Dupe, error) {
