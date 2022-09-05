@@ -56,5 +56,32 @@ func (m *DupeModel) Get(id int) (*Dupe, error) {
 }
 
 func (m *DupeModel) Latest() ([]*Dupe, error) {
-	return nil, nil
+	stmt := `SELECT id, dupe, content, created, expires FROM dupes
+    WHERE expires > UTC_TIMESTAMP() ORDER BY id DESC LIMIT 10`
+
+	rows, err := m.DB.Query(stmt)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	dupes := []*Dupe{}
+
+	for rows.Next() {
+		s := &Dupe{}
+
+		err = rows.Scan(&s.ID, &s.Dupe, &s.Content, &s.Created, &s.Expires)
+		if err != nil {
+			return nil, err
+		}
+
+		dupes = append(dupes, s)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return dupes, nil
 }

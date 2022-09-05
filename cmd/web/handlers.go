@@ -3,7 +3,8 @@ package main
 import (
 	"errors"
 	"fmt"
-	"html/template"
+
+	// "html/template"
 	"net/http"
 	"strconv"
 
@@ -16,26 +17,36 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	files := []string{
-		"./ui/html/base.tmpl.html",
-		"./ui/html/partials/nav.tmpl.html",
-		"./ui/html/pages/home.tmpl.html",
-	}
-
-	// Read files into template set
-	// If error, send 500 Internal Server Error
-	ts, err := template.ParseFiles(files...)
+	dupes, err := app.dupes.Latest()
 	if err != nil {
 		app.serverError(w, err)
 		return
 	}
 
-	// Write the base template to the response body
-	// Invoking base will in turn invoke title and main
-	err = ts.ExecuteTemplate(w, "base", nil)
-	if err != nil {
-		app.serverError(w, err)
+	for _, dupe := range dupes {
+		fmt.Fprintf(w, "%+v\n", dupe)
 	}
+
+	// files := []string{
+	// 	"./ui/html/base.tmpl.html",
+	// 	"./ui/html/partials/nav.tmpl.html",
+	// 	"./ui/html/pages/home.tmpl.html",
+	// }
+
+	// // Read files into template set
+	// // If error, send 500 Internal Server Error
+	// ts, err := template.ParseFiles(files...)
+	// if err != nil {
+	// 	app.serverError(w, err)
+	// 	return
+	// }
+
+	// // Write the base template to the response body
+	// // Invoking base will in turn invoke title and main
+	// err = ts.ExecuteTemplate(w, "base", nil)
+	// if err != nil {
+	// 	app.serverError(w, err)
+	// }
 }
 
 func (app *application) dupeView(w http.ResponseWriter, r *http.Request) {
