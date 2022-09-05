@@ -3,8 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
-
-	// "html/template"
+	"html/template"
 	"net/http"
 	"strconv"
 
@@ -66,7 +65,22 @@ func (app *application) dupeView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprintf(w, "%+v", dupe)
+	files := []string{
+		"./ui/html/base.tmpl.html",
+		"./ui/html/partials/nav.tmpl.html",
+		"./ui/html/pages/view.tmpl.html",
+	}
+
+	ts, err := template.ParseFiles(files...)
+	if err != nil {
+		app.serverError(w, err)
+		return
+	}
+
+	err = ts.ExecuteTemplate(w, "base", dupe)
+	if err != nil {
+		app.serverError(w, err)
+	}
 }
 
 func (app *application) dupeCreate(w http.ResponseWriter, r *http.Request) {

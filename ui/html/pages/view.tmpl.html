@@ -1,0 +1,15 @@
+{{define "title"}}Dupe #{{.ID}}{{end}}
+
+{{define "main"}}
+    <div class="dupe">
+        <div class="metadata">
+            <strong>{{.Dupe}}</strong>
+            <span>#{{.ID}}</span>
+        </div>
+        <pre><code>{{.Content}}</code></pre>
+        <div class="metadata">
+            <time>Created: {{.Created}}</time>
+            <time>Expires: {{.Expires}}</time>
+        </div>
+    </div>
+{{end}}
