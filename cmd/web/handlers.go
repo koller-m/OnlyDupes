@@ -77,7 +77,11 @@ func (app *application) dupeView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = ts.ExecuteTemplate(w, "base", dupe)
+	data := &templateData{
+		Dupe: dupe,
+	}
+
+	err = ts.ExecuteTemplate(w, "base", data)
 	if err != nil {
 		app.serverError(w, err)
 	}
