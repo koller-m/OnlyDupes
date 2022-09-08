@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"html/template"
 	"net/http"
 	"strconv"
 
@@ -22,30 +21,9 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	files := []string{
-		"./ui/html/base.tmpl.html",
-		"./ui/html/partials/nav.tmpl.html",
-		"./ui/html/pages/home.tmpl.html",
-	}
-
-	// Read files into template set
-	// If error, send 500 Internal Server Error
-	ts, err := template.ParseFiles(files...)
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
-
-	data := &templateData{
+	app.render(w, http.StatusOK, "home.tmpl.html", &templateData{
 		Dupes: dupes,
-	}
-
-	// Write the base template to the response body
-	// Invoking base will in turn invoke title and main
-	err = ts.ExecuteTemplate(w, "base", data)
-	if err != nil {
-		app.serverError(w, err)
-	}
+	})
 }
 
 func (app *application) dupeView(w http.ResponseWriter, r *http.Request) {
@@ -65,26 +43,9 @@ func (app *application) dupeView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	files := []string{
-		"./ui/html/base.tmpl.html",
-		"./ui/html/partials/nav.tmpl.html",
-		"./ui/html/pages/view.tmpl.html",
-	}
-
-	ts, err := template.ParseFiles(files...)
-	if err != nil {
-		app.serverError(w, err)
-		return
-	}
-
-	data := &templateData{
+	app.render(w, http.StatusOK, "view.tmpl.html", &templateData{
 		Dupe: dupe,
-	}
-
-	err = ts.ExecuteTemplate(w, "base", data)
-	if err != nil {
-		app.serverError(w, err)
-	}
+	})
 }
 
 func (app *application) dupeCreate(w http.ResponseWriter, r *http.Request) {
@@ -94,9 +55,9 @@ func (app *application) dupeCreate(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	dupe := "Another placeholder dupe to test db"
-	content := "Trying to execute SQL statements from OnlyDupes"
-	expires := 3
+	dupe := "A dupe you never heard of!"
+	content := "Another placeholder dupe while I finish the application"
+	expires := 7
 
 	id, err := app.dupes.Insert(dupe, content, expires)
 	if err != nil {
