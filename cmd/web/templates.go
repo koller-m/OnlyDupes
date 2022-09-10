@@ -8,8 +8,9 @@ import (
 )
 
 type templateData struct {
-	Dupe  *models.Dupe
-	Dupes []*models.Dupe
+	CurrentYear int
+	Dupe        *models.Dupe
+	Dupes       []*models.Dupe
 }
 
 func newTemplateCache() (map[string]*template.Template, error) {

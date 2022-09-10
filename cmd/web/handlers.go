@@ -21,9 +21,10 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	app.render(w, http.StatusOK, "home.tmpl.html", &templateData{
-		Dupes: dupes,
-	})
+	data := app.newTemplateData(r)
+	data.Dupes = dupes
+
+	app.render(w, http.StatusOK, "home.tmpl.html", data)
 }
 
 func (app *application) dupeView(w http.ResponseWriter, r *http.Request) {
@@ -43,9 +44,10 @@ func (app *application) dupeView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	app.render(w, http.StatusOK, "view.tmpl.html", &templateData{
-		Dupe: dupe,
-	})
+	data := app.newTemplateData(r)
+	data.Dupe = dupe
+
+	app.render(w, http.StatusOK, "view.tmpl.html", data)
 }
 
 func (app *application) dupeCreate(w http.ResponseWriter, r *http.Request) {
