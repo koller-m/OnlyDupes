@@ -37,7 +37,7 @@ h1 a {
 
 h1 a:hover {
     text-decoration: none;
-    color: #34495E;
+    color: #00aff0;
 }
 
 h2 {
@@ -48,12 +48,12 @@ h2 {
 }
 
 a {
-    color: #62CB31;
+    color: #00aff0;
     text-decoration: none;
 }
 
 a:hover {
-    color: #4EB722;
+    color: #007aff;
     text-decoration: underline;
 }
 
@@ -71,7 +71,7 @@ header {
 }
 
 header a {
-    color: #34495E;
+    color: #00aff0;
     text-decoration: none;
 }
 
@@ -133,7 +133,7 @@ nav a.live:after {
 }
 
 a.button, input[type="submit"] {
-    background-color: #62CB31;
+    background-color: #00aff0;
     border-radius: 3px;
     color: #FFFFFF;
     padding: 18px 27px;
@@ -144,7 +144,7 @@ a.button, input[type="submit"] {
 }
 
 a.button:hover, input[type="submit"]:hover {
-    background-color: #4EB722;
+    background-color: #007aff;
     color: #FFFFFF;
     cursor: pointer;
     text-decoration: none;
@@ -200,12 +200,12 @@ button {
     background: none;
     padding: 0;
     border: none;
-    color: #62CB31;
+    color: #00aff0;
     text-decoration: none;
 }
 
 button:hover {
-    color: #4EB722;
+    color: #007aff;
     text-decoration: underline;
     cursor: pointer;
 }
