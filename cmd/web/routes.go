@@ -12,5 +12,5 @@ func (app *application) routes() http.Handler {
 	mux.HandleFunc("/dupe/view", app.dupeView)
 	mux.HandleFunc("/dupe/create", app.dupeCreate)
 
-	return app.logRequest(secureHeaders(mux))
+	return app.recoverPanic(app.logRequest(secureHeaders(mux)))
 }
