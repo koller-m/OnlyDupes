@@ -56,9 +56,20 @@ func (app *application) dupeCreate(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) dupeCreatePost(w http.ResponseWriter, r *http.Request) {
-	dupe := "A dupe you never heard of!"
-	content := "Another placeholder dupe while I finish the application"
-	expires := 7
+	err := r.ParseForm()
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
+
+	dupe := r.PostForm.Get("dupe")
+	content := r.PostForm.Get("content")
+
+	expires, err := strconv.Atoi(r.PostForm.Get("expires"))
+	if err != nil {
+		app.clientError(w, http.StatusBadRequest)
+		return
+	}
 
 	id, err := app.dupes.Insert(dupe, content, expires)
 	if err != nil {
