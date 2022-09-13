@@ -21,7 +21,7 @@
                 </tr>
                 {{range .Dupes}}
                 <tr>
-                    <td><a href="/dupe/view?id={{.ID}}">{{.Dupe}}</a></td>
+                    <td><a href="/dupe/view/{{.ID}}">{{.Dupe}}</a></td>
                     <td>{{humanDate .Created}}</td>
                     <td>#{{.ID}}</td>
                 </tr>
