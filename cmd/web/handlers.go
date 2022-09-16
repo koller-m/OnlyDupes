@@ -13,6 +13,13 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+type dupeCreateForm struct {
+	Dupe        string
+	Content     string
+	Expires     int
+	FieldErrors map[string]string
+}
+
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
 	dupes, err := app.dupes.Latest()
 	if err != nil {
@@ -54,6 +61,10 @@ func (app *application) dupeView(w http.ResponseWriter, r *http.Request) {
 func (app *application) dupeCreate(w http.ResponseWriter, r *http.Request) {
 	data := app.newTemplateData(r)
 
+	data.Form = dupeCreateForm{
+		Expires: 365,
+	}
+
 	app.render(w, http.StatusOK, "create.tmpl.html", data)
 }
 
@@ -64,8 +75,8 @@ func (app *application) dupeCreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	dupe := r.PostForm.Get("dupe")
-	content := r.PostForm.Get("content")
+	// dupe := r.PostForm.Get("dupe")
+	// content := r.PostForm.Get("content")
 
 	expires, err := strconv.Atoi(r.PostForm.Get("expires"))
 	if err != nil {
@@ -73,27 +84,37 @@ func (app *application) dupeCreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fieldErrors := make(map[string]string)
-
-	if strings.TrimSpace(dupe) == "" {
-		fieldErrors["dupe"] = "This field cannot be blank"
-	} else if utf8.RuneCountInString(dupe) > 100 {
-		fieldErrors["dupe"] = "This field cannot be more than 100 characters long"
+	form := dupeCreateForm{
+		Dupe:        r.PostForm.Get("dupe"),
+		Content:     r.PostForm.Get("content"),
+		Expires:     expires,
+		FieldErrors: map[string]string{},
 	}
 
-	if strings.TrimSpace(content) == "" {
-		fieldErrors["content"] = "This field cannot be blank"
+	// fieldErrors := make(map[string]string)
+
+	if strings.TrimSpace(form.Dupe) == "" {
+		form.FieldErrors["dupe"] = "This field cannot be blank"
+	} else if utf8.RuneCountInString(form.Dupe) > 100 {
+		form.FieldErrors["dupe"] = "This field cannot be more than 100 characters long"
 	}
 
-	if expires != 1 && expires != 7 && expires != 365 {
-		fieldErrors["expires"] = "This field must equal 1, 7 or 365"
+	if strings.TrimSpace(form.Content) == "" {
+		form.FieldErrors["content"] = "This field cannot be blank"
 	}
 
-	if len(fieldErrors) > 0 {
-		fmt.Fprint(w, fieldErrors)
+	if form.Expires != 1 && form.Expires != 7 && form.Expires != 365 {
+		form.FieldErrors["expires"] = "This field must equal 1, 7 or 365"
 	}
 
-	id, err := app.dupes.Insert(dupe, content, expires)
+	if len(form.FieldErrors) > 0 {
+		data := app.newTemplateData(r)
+		data.Form = form
+		app.render(w, http.StatusUnprocessableEntity, "create.tmpl.html", data)
+		return
+	}
+
+	id, err := app.dupes.Insert(form.Dupe, form.Content, form.Expires)
 	if err != nil {
 		app.serverError(w, err)
 		return
