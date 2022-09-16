@@ -12,6 +12,7 @@ type templateData struct {
 	CurrentYear int
 	Dupe        *models.Dupe
 	Dupes       []*models.Dupe
+	Form        any
 }
 
 func humanDate(t time.Time) string {
