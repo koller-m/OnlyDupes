@@ -5,19 +5,18 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"strings"
-	"unicode/utf8"
 
 	"github.com/koller-m/OnlyDupes/internal/models"
+	"github.com/koller-m/OnlyDupes/internal/validator"
 
 	"github.com/julienschmidt/httprouter"
 )
 
 type dupeCreateForm struct {
-	Dupe        string
-	Content     string
-	Expires     int
-	FieldErrors map[string]string
+	Dupe    string
+	Content string
+	Expires int
+	validator.Validator
 }
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
@@ -75,9 +74,6 @@ func (app *application) dupeCreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// dupe := r.PostForm.Get("dupe")
-	// content := r.PostForm.Get("content")
-
 	expires, err := strconv.Atoi(r.PostForm.Get("expires"))
 	if err != nil {
 		app.clientError(w, http.StatusBadRequest)
@@ -85,29 +81,17 @@ func (app *application) dupeCreatePost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	form := dupeCreateForm{
-		Dupe:        r.PostForm.Get("dupe"),
-		Content:     r.PostForm.Get("content"),
-		Expires:     expires,
-		FieldErrors: map[string]string{},
+		Dupe:    r.PostForm.Get("dupe"),
+		Content: r.PostForm.Get("content"),
+		Expires: expires,
 	}
 
-	// fieldErrors := make(map[string]string)
+	form.CheckField(validator.NotBlank(form.Dupe), "dupe", "This field cannot be blank")
+	form.CheckField(validator.MaxChars(form.Dupe, 100), "dupe", "This field cannot be more than 100 characters long")
+	form.CheckField(validator.NotBlank(form.Content), "content", "This field cannot be blank")
+	form.CheckField(validator.PermittedInt(form.Expires, 1, 7, 365), "expires", "This field must equal 1, 7 or 365")
 
-	if strings.TrimSpace(form.Dupe) == "" {
-		form.FieldErrors["dupe"] = "This field cannot be blank"
-	} else if utf8.RuneCountInString(form.Dupe) > 100 {
-		form.FieldErrors["dupe"] = "This field cannot be more than 100 characters long"
-	}
-
-	if strings.TrimSpace(form.Content) == "" {
-		form.FieldErrors["content"] = "This field cannot be blank"
-	}
-
-	if form.Expires != 1 && form.Expires != 7 && form.Expires != 365 {
-		form.FieldErrors["expires"] = "This field must equal 1, 7 or 365"
-	}
-
-	if len(form.FieldErrors) > 0 {
+	if !form.Valid() {
 		data := app.newTemplateData(r)
 		data.Form = form
 		app.render(w, http.StatusUnprocessableEntity, "create.tmpl.html", data)
