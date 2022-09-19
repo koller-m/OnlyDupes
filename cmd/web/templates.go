@@ -13,6 +13,7 @@ type templateData struct {
 	Dupe        *models.Dupe
 	Dupes       []*models.Dupe
 	Form        any
+	Flash       string
 }
 
 func humanDate(t time.Time) string {
