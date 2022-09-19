@@ -94,5 +94,7 @@ func (app *application) dupeCreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	app.sessionManager.Put(r.Context(), "flash", "Dupe successfully added!")
+
 	http.Redirect(w, r, fmt.Sprintf("/dupe/view/%d", id), http.StatusSeeOther)
 }
